@@ -10,7 +10,7 @@ import org.springframework.security.authentication.dao.DaoAuthenticationProvider
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.factory.PasswordEncoderFactories;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.oauth2.config.annotation.builders.ClientDetailsServiceBuilder;
 import org.springframework.security.oauth2.config.annotation.builders.InMemoryClientDetailsServiceBuilder;
@@ -24,75 +24,65 @@ import org.springframework.security.oauth2.provider.token.store.InMemoryTokenSto
 
 @Configuration
 @EnableAuthorizationServer
-public class AuthorizationServerConfiguration extends AuthorizationServerConfigurerAdapter{
+public class AuthorizationServerConfiguration extends AuthorizationServerConfigurerAdapter {
 	
 	@Autowired
-    private UserDetailsService userService;
-	
-    @Override
-    public void configure(ClientDetailsServiceConfigurer clients) throws Exception {
-        ClientDetailsServiceBuilder<InMemoryClientDetailsServiceBuilder>.ClientBuilder builder = clients.inMemory()
-                .withClient("client_1");
-        // 加密
-        builder.secret(passwordEncoder().encode("123456")).scopes("all").authorizedGrantTypes("client_credentials","password","refresh_token");
-    }
+	private UserDetailsService userService;
 
-    @Bean
-    public TokenStore tokenStore() {
-        //使用内存的tokenStore
-        return new InMemoryTokenStore();
-    }
+	@Override
+	public void configure(ClientDetailsServiceConfigurer clients) throws Exception {
+		ClientDetailsServiceBuilder<InMemoryClientDetailsServiceBuilder>.ClientBuilder builder = clients.inMemory()
+				.withClient("client_1");
+		// 加密
+		builder.secret(passwordEncoder().encode("123456")).scopes("all").authorizedGrantTypes("client_credentials",
+				"password", "refresh_token");
+	}
 
-    
-    @Override
-    public void configure(AuthorizationServerEndpointsConfigurer endpoints) {
-        endpoints.authenticationManager(authenticationManager()).tokenStore(tokenStore())
-        .allowedTokenEndpointRequestMethods(HttpMethod.GET, HttpMethod.POST);
-    }
+	@Bean
+	public TokenStore tokenStore() {
+		// 使用内存的tokenStore
+		return new InMemoryTokenStore();
+	}
 
-    @Override
-    public void configure(AuthorizationServerSecurityConfigurer oauthServer) {
-        //允许表单认证
-        oauthServer.allowFormAuthenticationForClients();
-        //允许check_token访问
-        oauthServer.checkTokenAccess("permitAll()");
-    }
+	@Override
+	public void configure(AuthorizationServerEndpointsConfigurer endpoints) {
+		endpoints.authenticationManager(authenticationManager()).tokenStore(tokenStore())
+				.allowedTokenEndpointRequestMethods(HttpMethod.GET, HttpMethod.POST);
+	}
 
-    @Bean
-    AuthenticationManager authenticationManager(){
-        AuthenticationManager authenticationManager = new AuthenticationManager() {
-            @Override
-            public Authentication authenticate(Authentication authentication) throws AuthenticationException {
-                return daoAuhthenticationProvider().authenticate(authentication);
-            }
-        };
-        return authenticationManager;
-    }
+	@Override
+	public void configure(AuthorizationServerSecurityConfigurer oauthServer) {
+		// 允许表单认证
+		oauthServer.allowFormAuthenticationForClients();
+		// 允许check_token访问
+		oauthServer.checkTokenAccess("permitAll()");
+	}
 
-    @Bean
-    public AuthenticationProvider daoAuhthenticationProvider() {
-        DaoAuthenticationProvider daoAuthenticationProvider = new DaoAuthenticationProvider();
-        daoAuthenticationProvider.setUserDetailsService(userService);
-        daoAuthenticationProvider.setHideUserNotFoundExceptions(false);
-        daoAuthenticationProvider.setPasswordEncoder(passwordEncoder());
-        return daoAuthenticationProvider;
-    }
-    
-// 可删
-//    @Bean
-//    UserDetailsService userDetailsService(){
-//        InMemoryUserDetailsManager userDetailsService = new InMemoryUserDetailsManager();
-//        userDetailsService.createUser(User.withUsername("admin").password(passwordEncoder().encode("admin")).authorities("ROLE_USER").build());
-//        return userDetailsService;
-//    }
+	@Bean
+	AuthenticationManager authenticationManager() {
+		AuthenticationManager authenticationManager = new AuthenticationManager() {
+			@Override
+			public Authentication authenticate(Authentication authentication) throws AuthenticationException {
+				return daoAuhthenticationProvider().authenticate(authentication);
+			}
+		};
+		return authenticationManager;
+	}
 
+	@Bean
+	public AuthenticationProvider daoAuhthenticationProvider() {
+		DaoAuthenticationProvider daoAuthenticationProvider = new DaoAuthenticationProvider();
+		daoAuthenticationProvider.setUserDetailsService(userService);
+		daoAuthenticationProvider.setHideUserNotFoundExceptions(false);
+		daoAuthenticationProvider.setPasswordEncoder(passwordEncoder());
+		return daoAuthenticationProvider;
+	}
 
-    @Bean
-    PasswordEncoder passwordEncoder() {
-        //加密方式
-        PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
-        return passwordEncoder;
-    }
+	@Bean
+	PasswordEncoder passwordEncoder() {
+		// 加密方式
+		PasswordEncoder passwordEncoder = PasswordEncoderFactories.createDelegatingPasswordEncoder();
+		return passwordEncoder;
+	}
 
 }
-
