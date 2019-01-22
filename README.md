@@ -9,3 +9,5 @@
 	    grant_type 	password
 	    username 	user1
 	    password 	123456789
+	    
+4. 权限验证调用，输入：`localhost:8080/user` 选择`Bearer Token`，输入获取的token值进行调用 
