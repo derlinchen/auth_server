@@ -63,14 +63,14 @@ public class AuthorizationServerConfiguration extends AuthorizationServerConfigu
 		AuthenticationManager authenticationManager = new AuthenticationManager() {
 			@Override
 			public Authentication authenticate(Authentication authentication) throws AuthenticationException {
-				return daoAuhthenticationProvider().authenticate(authentication);
+				return daoAuthenticationProvider().authenticate(authentication);
 			}
 		};
 		return authenticationManager;
 	}
 
 	@Bean
-	public AuthenticationProvider daoAuhthenticationProvider() {
+	public AuthenticationProvider daoAuthenticationProvider() {
 		DaoAuthenticationProvider daoAuthenticationProvider = new DaoAuthenticationProvider();
 		daoAuthenticationProvider.setUserDetailsService(userService);
 		daoAuthenticationProvider.setHideUserNotFoundExceptions(false);
