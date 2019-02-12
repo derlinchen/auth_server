@@ -25,7 +25,7 @@ import org.springframework.security.oauth2.provider.token.store.InMemoryTokenSto
 @Configuration
 @EnableAuthorizationServer
 public class AuthorizationServerConfiguration extends AuthorizationServerConfigurerAdapter {
-	
+
 	@Autowired
 	private UserDetailsService userService;
 
@@ -36,6 +36,8 @@ public class AuthorizationServerConfiguration extends AuthorizationServerConfigu
 		// 加密
 		builder.secret(passwordEncoder().encode("123456")).scopes("all").authorizedGrantTypes("client_credentials",
 				"password", "refresh_token");
+		// 设置access_token过期时间，注释掉为设置默认最大时间
+		// builder.accessTokenValiditySeconds(10000);
 	}
 
 	@Bean
