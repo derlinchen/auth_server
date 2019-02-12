@@ -38,6 +38,8 @@ public class AuthorizationServerConfiguration extends AuthorizationServerConfigu
 				"password", "refresh_token");
 		// 设置access_token过期时间，注释掉为设置默认最大时间
 		// builder.accessTokenValiditySeconds(10000);
+		// -1表示用不失效
+		// builder.accessTokenValiditySeconds(-1);
 	}
 
 	@Bean
