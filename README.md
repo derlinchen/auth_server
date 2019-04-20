@@ -10,4 +10,6 @@
 	    username 	user1
 	    password 	123456789
 	    
-4. 权限验证调用，输入：`localhost:8080/user` 选择`Bearer Token`，输入获取的token值进行调用 
+4. 权限验证调用，输入：`localhost:8080/user` 选择`Bearer Token`，输入获取的token值进行调用
+
+5. 刷新token http://localhost:8080/oauth/token?client_id=client_1&client_secret=123456&grant_type=refresh_token&refresh_token=655e8c5d-d351-40e7-bd15-d413af6142e6 
